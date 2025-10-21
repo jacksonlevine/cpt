@@ -1,0 +1,13 @@
+﻿---
+import Button from "./Button.astro";
+const {heading} = Astro.props;
+---
+
+<!--This is opacity 0 right now because it will be faded in by the more specific 'logo-heading + focused' rule-->
+<div class="text-center italic opacity-0 duration-1000 ease-in-out transition-opacity delay-[1s] mt-[1rem] logo-heading">
+    <h2>{heading}</h2>
+    <div class="pt-[1rem] pb-[1rem] z-[100]">
+        <Button label="Test1" />
+        <Button label="Test2" />
+    </div>
+</div>

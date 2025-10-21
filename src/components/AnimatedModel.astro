@@ -1,0 +1,14 @@
+﻿---
+const { modelSrc } = Astro.props;
+---
+
+<!--The model/canvas doesn't actually exist here, 
+this just tells the parent canvas to load it & reserves some layout room for it. Previously "logo-dummy",
+but now it both "declares" the model and reserves its page layout space which seems more sensible
+
+This only works if a parent above it contains a FullSizeCanvas as a child-->
+<div data-model-path={modelSrc} 
+     class=`animatedmodelinstance 
+     w-[50vw] aspect-[32/9] max-w-[20vw] min-h-[30vh] 
+     bg-contain bg-no-repeat bg-center pointer-none`
+/>

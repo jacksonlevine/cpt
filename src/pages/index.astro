@@ -1,0 +1,77 @@
+---
+import BackgroundStop from '../components/BackgroundStop.astro';
+import Layout from '../layouts/Layout.astro';
+import CenteredContent from '../components/CenteredContent.astro';
+import AnimatedModel from '../components/AnimatedModel.astro';
+import HeadingAndButtons from "../components/HeadingAndButtons.astro";
+import FullSizeCanvas from "../components/FullSizeCanvas.astro";
+
+import bg1 from "../assets/images/BG1_CASGroup.jpg";
+import bg2 from "../assets/images/BG2_CASBioceuticals.jpg";
+import bg3 from "../assets/images/BG3_CASOrganics.jpg";
+import bg4 from "../assets/images/BG4_CASBiotics.jpg";
+import bg5 from "../assets/images/BG5_CASBioSciences.jpg";
+import bg6 from "../assets/images/BG6_CASPublishing.jpg";
+import bg7 from "../assets/images/BG7_CASProperties.jpg";
+
+const stops = [
+    {
+        bg: bg1, model: "/models/CASGroup.glb",
+        heading: "Simple Heading", 
+        sectionname: "CAS Group"
+    },
+    {
+        bg: bg2, model: "/models/CASBioCeuticals.glb",
+        heading: "The Best of Land and Sea ... BioCeutically®", 
+        sectionname: "CAS Bioceuticals"
+    },
+    {
+        bg: bg3, model: "/models/CASOrganics.glb",
+        heading: "Best of Land and Sea... Organically®", 
+        sectionname: "CAS Organics"
+    },
+    {
+        bg: bg4, model: "/models/CASBiotics.glb",
+        heading: "The Best of Land and Sea... Biotically®", 
+        sectionname: "CAS Biotics"
+    },
+    {
+        bg: bg5, model: "/models/CASBioSciences.glb",
+        heading: "The Best of Land and Sea... Both Nutraceutically & Pharmaceutically®", 
+        sectionname: "CAS BioSciences"
+    },
+    {
+        bg: bg6, model: "/models/CAS Publishing.glb",
+        heading: "The Best of Land and Sea... Scientifically®", 
+        sectionname: "CAS Publishing"
+    },
+    {
+        bg: bg7, model: "/models/CAS Properties.glb",
+        heading: "The Best of Land and Sea... Intellectually®", 
+        sectionname: "CAS Properties"
+    },
+];
+
+---
+
+<Layout>
+    <div id="indicator">
+        {stops.map((stop, index)=> (
+            <div class={`dot ${index === 0 ? "active" : ""}`}>
+                <div class="tooltip">{stop.sectionname}</div>
+            </div>
+        ))}
+    </div>
+    
+    <div id="cascontainer" class="h-screen overflow-y-auto overflow-x-hidden">
+        {stops.map(stop => (
+            <BackgroundStop backgroundImgSrc={stop.bg}>
+                <FullSizeCanvas/>
+                <CenteredContent>
+                    <AnimatedModel modelSrc={stop.model} />
+                    <HeadingAndButtons heading={stop.heading} />
+                </CenteredContent>
+            </BackgroundStop>
+        ))}
+    </div>
+</Layout>
