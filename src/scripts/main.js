@@ -224,9 +224,14 @@ container.addEventListener('scroll', () => {
     }, 100);
 });
 
-
+let activeContainer = wrappers[currentDisplayingLogoIndex].querySelector('.canvascontainer');
+let lastActiveContainerIndex = currentDisplayingLogoIndex;
 function animateActiveViewer() {
-    const activeContainer = wrappers[currentDisplayingLogoIndex].querySelector('.canvascontainer');
+    if(lastActiveContainerIndex !== currentDisplayingLogoIndex) {
+        lastActiveContainerIndex = currentDisplayingLogoIndex;
+        activeContainer = wrappers[currentDisplayingLogoIndex].querySelector('.canvascontainer');
+    }
+    
     const viewer = viewers.get(activeContainer);
 
     if (viewer) {
@@ -236,9 +241,9 @@ function animateActiveViewer() {
             if (isTouchDevice) {
 
                 // Idle sway fallback
-                swayTime += 0.016;
-                targetRotX = Math.sin(swayTime * 0.7) * maxTilt * 0.5;
-                targetRotY = Math.sin(swayTime * 0.9) * maxTilt * 0.5;
+                // swayTime += 0.016;
+                // targetRotX = Math.sin(swayTime * 0.7) * maxTilt * 0.5;
+                // targetRotY = Math.sin(swayTime * 0.9) * maxTilt * 0.5;
 
             } else {
                 // Desktop: mouse-follow
