@@ -43,6 +43,10 @@ let lastHeight = window.innerHeight;
 let mouseX = 0, mouseY = 0;
 const maxTilt = 0.1; // radians
 
+//For detecting touch devices and using fallback passive 'sway' in lieu of mouse-driven animation
+let swayTime = 0;
+const isTouchDevice = 'ontouchstart' in window;
+
 
 function updateIndicator() {
     dots.forEach((dot, i) => {
@@ -96,6 +100,13 @@ function adjustScrollForCurrentSection() {
     }
 }
 
+function getModelScaleForScreenWidth(screenWidth) {
+    if (screenWidth < 450) return 0.4;
+    if (screenWidth < 600) return 0.5;
+    if (screenWidth < 800) return 0.75;
+    return 1.0;
+}
+
 function resizeIfNeeded() {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -104,14 +115,24 @@ function resizeIfNeeded() {
 
     lastWidth = width;
     lastHeight = height;
+    
+    //Halve the scale if under a certain limit for mobile screens.
+    const scaleFactor = getModelScaleForScreenWidth(width);
+    
 
-    viewers.forEach(({ renderer, camera }, container) => {
+    viewers.forEach(({ renderer, camera, model }, container) => {
         const w = container.clientWidth;
         const h = container.clientHeight;
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
+
+        // Scale the model if it exists
+        if (model) {
+            model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+        }
     });
+
     adjustScrollForCurrentSection();
 }
 
@@ -209,10 +230,22 @@ function animateActiveViewer() {
     const viewer = viewers.get(activeContainer);
 
     if (viewer) {
-        // Smooth tilt toward mouse
         if (viewer.pivot) {
-            const targetRotX = mouseY * maxTilt;
-            const targetRotY = mouseX * maxTilt;
+            let targetRotX, targetRotY;
+
+            if (isTouchDevice) {
+
+                // Idle sway fallback
+                swayTime += 0.016;
+                targetRotX = Math.sin(swayTime * 0.7) * maxTilt * 0.5;
+                targetRotY = Math.sin(swayTime * 0.9) * maxTilt * 0.5;
+
+            } else {
+                // Desktop: mouse-follow
+                targetRotX = mouseY * maxTilt;
+                targetRotY = mouseX * maxTilt;
+            }
+
             viewer.pivot.rotation.x += (targetRotX - viewer.pivot.rotation.x) * 0.1;
             viewer.pivot.rotation.y += (targetRotY - viewer.pivot.rotation.y) * 0.1;
         }
@@ -239,6 +272,7 @@ containers.forEach(container => {
     const modelPath = modelinstance.dataset.modelPath;
     initThreeViewer(container, modelPath, viewers);
 });
+
 
 function initThreeViewer(container, modelPath, viewers) {
     const scene = new THREE.Scene();
@@ -300,6 +334,9 @@ function initThreeViewer(container, modelPath, viewers) {
             center.z += pivot.position.z;
             viewer.model.position.sub(center);
 
+            const scaleFactor = getModelScaleForScreenWidth(window.innerWidth);
+            viewer.model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
             pivot.add(viewer.model);
             viewer.pivot = pivot;
 
@@ -345,9 +382,10 @@ function initThreeViewer(container, modelPath, viewers) {
     });
 }
 
+
+
+
 //Finally start the RAF loop
 requestAnimationFrame(animateActiveViewer);
-
-
 
 
