@@ -277,11 +277,13 @@ function initThreeViewer(container, modelPath, viewers) {
         hasAnimatedIn: false
     };
     viewers.set(container, viewer);
+    
+    const BASE_IF_USING = "/cpt/"
 
     // Load model
     const loader = new GLTFLoader();
     loader.load(
-         modelPath,
+        BASE_IF_USING + modelPath,
         (gltf) => {
 
             const pivot = new THREE.Object3D();
