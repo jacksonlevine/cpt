@@ -250,17 +250,26 @@ function animateActiveViewer() {
             let targetRotX, targetRotY;
 
             if (isTouchDevice) {
-
-                //Idle sway fallback
+                
+                //Just sway on mobile & a little more extreme so you can see it on small screens
                 swayTime += 0.016;
-                targetRotX = Math.sin(swayTime * 0.7) * maxTilt * 0.5;
-                targetRotY = Math.sin(swayTime * 0.9) * maxTilt * 0.5;
+                targetRotX += Math.sin(swayTime * 0.7) * maxTilt * 0.5;
+                targetRotY += Math.sin(swayTime * 0.9) * maxTilt * 0.5;
 
             } else {
-                // Desktop: mouse-follow
+                // Desktop: lighter sway + mouse-follow
+
+                
                 targetRotX = mouseY * maxTilt;
                 targetRotY = mouseX * maxTilt;
+                swayTime += 0.016;
+                targetRotX += Math.sin(swayTime * 0.7) * maxTilt * 0.2;
+                targetRotY += Math.sin(swayTime * 0.9) * maxTilt * 0.2;
+
             }
+
+            
+
 
             viewer.pivot.rotation.x += (targetRotX - viewer.pivot.rotation.x) * 0.1;
             viewer.pivot.rotation.y += (targetRotY - viewer.pivot.rotation.y) * 0.1;
