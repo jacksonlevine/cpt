@@ -298,7 +298,7 @@ function initThreeViewer(container, modelPath, viewers) {
     );
 
     // Start camera close, will ease out when triggered
-    camera.position.set(0, 0.3, -1.25);
+    camera.position.set(0, 0.3, -1);
     const targetCameraPos = new THREE.Vector3(0, 0, 2);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
