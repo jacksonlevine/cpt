@@ -68,18 +68,23 @@ function scrollToImage(index) {
     currentDisplayingLogoIndex = index;
     updateIndicator();
     
+    let doAnim = null;
+    
     if(!visitedSections.has(index)) {
         visitedSections.add(index);
         wrappers[index].querySelector('.logo-heading').classList.add('focused');
+        
+        doAnim = () => {
+            const threeContainer = wrappers[index].querySelector('.canvascontainer');
+            if (threeContainer) {
+                threeContainer.dispatchEvent(new Event('focusModel'));
 
-        const threeContainer = wrappers[index].querySelector('.canvascontainer');
-        if (threeContainer) {
-            threeContainer.dispatchEvent(new Event('focusModel'));
-
-            setTimeout(() => {
-                threeContainer.classList.add('noblur');
-            }, 200);
+                setTimeout(() => {
+                    threeContainer.classList.add('noblur');
+                }, 200);
+            } 
         }
+        
     }
 
     container.scrollTo({
@@ -88,6 +93,9 @@ function scrollToImage(index) {
     });
     setTimeout(() => {
         isScrollingToNewSection = false;
+        if(doAnim) {
+            doAnim();
+        }
     }, 600);
 }
 
