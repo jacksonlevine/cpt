@@ -240,10 +240,10 @@ function animateActiveViewer() {
 
             if (isTouchDevice) {
 
-                // Idle sway fallback
-                // swayTime += 0.016;
-                // targetRotX = Math.sin(swayTime * 0.7) * maxTilt * 0.5;
-                // targetRotY = Math.sin(swayTime * 0.9) * maxTilt * 0.5;
+                //Idle sway fallback
+                swayTime += 0.016;
+                targetRotX = Math.sin(swayTime * 0.7) * maxTilt * 0.5;
+                targetRotY = Math.sin(swayTime * 0.9) * maxTilt * 0.5;
 
             } else {
                 // Desktop: mouse-follow
