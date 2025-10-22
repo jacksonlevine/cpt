@@ -68,22 +68,24 @@ function scrollToImage(index) {
     currentDisplayingLogoIndex = index;
     updateIndicator();
     
-    let doAnim = null;
     
     if(!visitedSections.has(index)) {
         visitedSections.add(index);
         wrappers[index].querySelector('.logo-heading').classList.add('focused');
         
-        doAnim = () => {
-            const threeContainer = wrappers[index].querySelector('.canvascontainer');
-            if (threeContainer) {
+        const threeContainer = wrappers[index].querySelector('.canvascontainer');
+        if (threeContainer) {
+            
+            setTimeout(() => {
+                threeContainer.classList.add('noblur');
+            }, 200);
+
+            setTimeout(() => {
                 threeContainer.dispatchEvent(new Event('focusModel'));
 
-                setTimeout(() => {
-                    threeContainer.classList.add('noblur');
-                }, 200);
-            } 
-        }
+            }, 400);
+        } 
+        
         
     }
 
@@ -92,10 +94,7 @@ function scrollToImage(index) {
         behavior: 'smooth'
     });
     setTimeout(() => {
-        isScrollingToNewSection = false;
-        if(doAnim) {
-            doAnim();
-        }
+        isScrollingToNewSection = false
     }, 600);
 }
 
@@ -108,10 +107,13 @@ function adjustScrollForCurrentSection() {
     }
 }
 
-function getModelScaleForScreenWidth(screenWidth) {
-    if (screenWidth < 450) return 0.4;
-    if (screenWidth < 600) return 0.5;
-    if (screenWidth < 800) return 0.75;
+function getModelScaleForScreenWidthAndModelBboxWidth(screenWidth, bboxwidth) {
+    
+    const bboxfactor = Math.min(bboxwidth * 0.4, 0.6);
+    
+    if (screenWidth < 450) return 1.0 - (bboxfactor);
+    if (screenWidth < 600) return 1.0 - (bboxfactor * 0.7);
+    if (screenWidth < 800) return 1.0 - (bboxfactor / 4);
     return 1.0;
 }
 
@@ -124,18 +126,19 @@ function resizeIfNeeded() {
     lastWidth = width;
     lastHeight = height;
     
-    //Halve the scale if under a certain limit for mobile screens.
-    const scaleFactor = getModelScaleForScreenWidth(width);
+    
     
 
-    viewers.forEach(({ renderer, camera, model }, container) => {
+    viewers.forEach(({ renderer, camera, model, bbox }, container) => {
         const w = container.clientWidth;
         const h = container.clientHeight;
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
 
-        // Scale the model if it exists
+        //Scale down the model based on the model's bounding box x size and the screen width
+        const scaleFactor = getModelScaleForScreenWidthAndModelBboxWidth(width, bbox.getSize(new THREE.Vector3()).x);
+
         if (model) {
             model.scale.set(scaleFactor, scaleFactor, scaleFactor);
         }
@@ -298,7 +301,7 @@ function initThreeViewer(container, modelPath, viewers) {
     );
 
     // Start camera close, will ease out when triggered
-    camera.position.set(0, 0.3, -1);
+    camera.position.set(0, 0.0, 0);
     const targetCameraPos = new THREE.Vector3(0, 0, 2);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -310,7 +313,7 @@ function initThreeViewer(container, modelPath, viewers) {
 
     // Lighting
     const light = new THREE.DirectionalLight(0xffffff, 5);
-    light.position.set(0, 2, 7);
+    light.position.set(0, 1.3, 10);
     scene.add(light);
     scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
@@ -321,7 +324,8 @@ function initThreeViewer(container, modelPath, viewers) {
         camera,
         animationFrame: null,
         model: null,
-        hasAnimatedIn: false
+        hasAnimatedIn: false,
+        bbox: null
     };
     viewers.set(container, viewer);
 
@@ -347,11 +351,15 @@ function initThreeViewer(container, modelPath, viewers) {
             center.z += pivot.position.z;
             viewer.model.position.sub(center);
 
-            const scaleFactor = getModelScaleForScreenWidth(window.innerWidth);
+            const boxSize = new THREE.Vector3();
+            box.getSize(boxSize);
+
+            const scaleFactor = getModelScaleForScreenWidthAndModelBboxWidth(window.innerWidth, boxSize.x);
             viewer.model.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
             pivot.add(viewer.model);
             viewer.pivot = pivot;
+            viewer.bbox = box;
 
 
 
