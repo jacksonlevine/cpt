@@ -298,7 +298,7 @@ function initThreeViewer(container, modelPath, viewers) {
     );
 
     // Start camera close, will ease out when triggered
-    camera.position.set(0, 0.3, -2);
+    camera.position.set(0, 0.3, -1.5);
     const targetCameraPos = new THREE.Vector3(0, 0, 2);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -374,7 +374,7 @@ function initThreeViewer(container, modelPath, viewers) {
         if (viewer.hasAnimatedIn) return;
         viewer.hasAnimatedIn = true;
 
-        const duration = 1000;
+        const duration = 1200;
         const startTime = performance.now();
         const startPos = camera.position.clone();
 
